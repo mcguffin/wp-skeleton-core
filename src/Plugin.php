@@ -11,7 +11,9 @@ if ( ! defined('ABSPATH') ) {
 	die('FU!');
 }
 
-class Plugin extends Singleton implements ComponentInterface {
+class Plugin extends Singleton implements ComponentInterface,CoreInterface {
+
+
 
 	/** @var string plugin main file */
 	private $plugin_file;
@@ -26,7 +28,18 @@ class Plugin extends Singleton implements ComponentInterface {
 	/**
 	 *	@inheritdoc
 	 */
-	protected function __construct( $file ) {
+	protected function __construct() {
+
+		Core::set( $this );
+
+		parent::__construct();
+
+	}
+
+	/**
+	 *	@inheritdoc
+	 */
+	public final function init( $file ) {
 
 		$this->plugin_file = $file;
 
@@ -38,7 +51,6 @@ class Plugin extends Singleton implements ComponentInterface {
 
 		add_action( 'plugins_loaded' , array( $this , 'load_textdomain' ) );
 
-		parent::__construct();
 	}
 
 	/**
