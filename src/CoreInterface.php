@@ -19,6 +19,10 @@ interface CoreInterface {
 	 */
 	public function version();
 
+	/**
+	 *	@return string package slug
+	 */
+	public function get_slug();
 
 	/**
 	 *	Return locations where to look for assets and map them to URLs.

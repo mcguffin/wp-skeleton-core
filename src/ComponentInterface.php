@@ -44,15 +44,5 @@ interface ComponentInterface {
 	 */
 	public function deactivate();
 
-	/**
-	 *	Called on Plugin uninstall
-	 *	@param	string	$new_version
-	 *	@param	string	$old_version
-	 *	@return array(
-	 *		'success'	=> bool,
-	 *		'messages'	=> array,
-	 *	)
-	 */
-	public static function uninstall();
 
 }

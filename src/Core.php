@@ -11,19 +11,121 @@ if ( ! defined('ABSPATH') ) {
 	die('FU!');
 }
 
-class Core {
+abstract class Core extends Singleton implements ComponentInterface,CoreInterface {
 
-	private static $_instance = null;
+	/** @var string plugin components which might need upgrade */
+	private static $components = [];
 
-	public static function get() : CoreInterface {
-		return self::$_instance;
+	/**
+	 *	@inheritdoc
+	 */
+	protected function __construct() {
+
+		add_action( 'admin_init', [ $this, 'maybe_upgrade' ] );
+
 	}
 
-	public static function set( CoreInterface $instance ) {
-		if ( ! is_null( self::$_instance ) ) {
-			throw new \Exception('Core already set');
+	/**
+	 *	@return string package slug
+	 */
+	abstract public function get_slug();
+
+	/**
+	 *	@return string package prefix
+	 */
+	final public function get_prefix() {
+
+		return str_replace( '-', '_', $this->get_slug() );
+
+	}
+
+	/**
+	 *	Load text domain
+	 *
+	 *  @action plugins_loaded
+	 */
+	abstract public function load_textdomain();
+
+
+	/**
+	 *	@action plugins_loaded
+	 */
+	public function maybe_upgrade() {
+		// trigger upgrade
+		$new_version = $this->version();
+		$old_version = get_site_option( $this->get_prefix() . '_version' );
+
+		// call upgrade
+		if ( version_compare( $new_version, $old_version, '>' ) ) {
+
+			$this->upgrade( $new_version, $old_version );
+
+			update_site_option( $this->get_prefix() . '_version', $new_version );
+
 		}
-		self::$_instance = $instance;
+
+	}
+
+
+	/**
+	 *	Fired on plugin activation
+	 */
+	public function activate() {
+
+		$this->maybe_upgrade();
+
+		foreach ( self::$components as $component ) {
+			$comp = $component::instance();
+			$comp->activate();
+		}
+	}
+
+
+	/**
+	 *	Fired on plugin updgrade
+	 *
+	 *	@param string $nev_version
+	 *	@param string $old_version
+	 *	@return array(
+	 *		'success' => bool,
+	 *		'messages' => array,
+	 * )
+	 */
+	public function upgrade( $new_version, $old_version ) {
+
+		$result = array(
+			'success'	=> true,
+			'messages'	=> array(),
+		);
+
+		foreach ( self::$components as $component ) {
+			$comp = $component::instance();
+			$upgrade_result = $comp->upgrade( $new_version, $old_version );
+			$result['success'] 		&= $upgrade_result['success'];
+			$result['messages'][]	=  $upgrade_result['message'];
+		}
+
+		return $result;
+	}
+
+	/**
+	 *	Fired on plugin deactivation
+	 */
+	public function deactivate() {
+		foreach ( self::$components as $component ) {
+			$comp = $component::instance();
+			$comp->deactivate();
+		}
+	}
+
+	/**
+	 *	Fired on plugin deinstallation
+	 */
+	public function uninstall() {
+		foreach ( self::$components as $component ) {
+			$comp = $component::instance();
+			$comp->uninstall();
+		}
 	}
 
 }
