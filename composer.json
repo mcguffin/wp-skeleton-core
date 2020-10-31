@@ -1,0 +1,13 @@
+{
+    "name": "mcguffin/wp-skeleton-core",
+    "description": "WP Plugin Component Core",
+    "type": "wordpress-library",
+    "license": "GPL-3.0-or-later",
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "McGuffin\\Core\\": "src/"
+        }
+    },
+    "require": {}
+}
