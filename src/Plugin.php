@@ -39,7 +39,7 @@ class Plugin extends Singleton implements ComponentInterface,CoreInterface {
 	/**
 	 *	@inheritdoc
 	 */
-	public final function init( $file ) {
+	public final function bootstrap( $file ) {
 
 		$this->plugin_file = $file;
 
