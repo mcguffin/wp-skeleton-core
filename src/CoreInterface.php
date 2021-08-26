@@ -33,4 +33,17 @@ interface CoreInterface {
 	 */
 	public function get_asset_roots();
 
+	/**
+	 *	Load text domain
+	 *
+	 *  @action plugins_loaded
+	 */
+	public function load_textdomain();
+
+	/**
+	 *	Get the package directory
+	 *
+	 *  @return String package directory
+	 */
+	public function get_package_dir();
 }
