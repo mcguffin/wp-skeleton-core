@@ -13,8 +13,31 @@ if ( ! defined('ABSPATH') ) {
 
 abstract class Core extends Singleton implements ComponentInterface,CoreInterface {
 
-	/** @var string plugin components which might need upgrade */
+	/** @var CoreInterface core (plugin or theme) */
+	private static CoreInterface $core;
+
+	/** @var String plugin components which might need upgrade */
 	private static $components = [];
+
+	/** @var String version number */
+	private $_version = null;
+
+	/**
+	 *	@param CoreInterface $core
+	 */
+	protected static function set( CoreInterface $core ) {
+		if ( isset( self::$core ) ) {
+			throw new \Exception('Core already set');
+		}
+		self::$core = $core;
+	}
+
+	/**
+	 *	@return CoreInterface
+	 */
+	public static function get() : CoreInterface {
+		return self::$core;
+	}
 
 	/**
 	 *	@inheritdoc
@@ -26,11 +49,6 @@ abstract class Core extends Singleton implements ComponentInterface,CoreInterfac
 	}
 
 	/**
-	 *	@return string package slug
-	 */
-	abstract public function get_slug();
-
-	/**
 	 *	@return string package prefix
 	 */
 	final public function get_prefix() {
@@ -40,12 +58,14 @@ abstract class Core extends Singleton implements ComponentInterface,CoreInterfac
 	}
 
 	/**
-	 *	Load text domain
-	 *
-	 *  @action plugins_loaded
+	 *	@return string current plugin version
 	 */
-	abstract public function load_textdomain();
-
+	final public function version() {
+		if ( is_null( $this->_version ) ) {
+			$this->_version = include_once $this->get_package_dir() . 'include/version.php';
+		}
+		return $this->_version;
+	}
 
 	/**
 	 *	@action plugins_loaded
