@@ -1,16 +1,11 @@
 <?php
 /**
- *	@package PDFRenderer\Core
+ *	@package McGuffin\Core
  *	@version 1.0.0
  *	2018-09-22
  */
 
 namespace McGuffin\Core;
-
-if ( ! defined('ABSPATH') ) {
-	die('FU!');
-}
-
 
 abstract class Singleton {
 
@@ -40,7 +35,6 @@ abstract class Singleton {
 	 *	Prevent Instantinating
 	 */
 	private function __clone() { }
-	private function __wakeup() { }
 
 	/**
 	 *	Protected constructor
